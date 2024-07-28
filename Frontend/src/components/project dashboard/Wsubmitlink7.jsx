@@ -23,17 +23,16 @@ const Wsubmitlink7 = () => {
     const fetchSubmissionData = async () => {
       const token = localStorage.getItem('token');
       try {
-        const response = await axiosInstance.get('http://localhost:3000/wsubmitdata', {
+        const response = await axiosInstance.post('http://localhost:3000/getsubmissiondata', {}, {
           headers: {
             Authorization: `Bearer ${token}`
-          }
+          } 
         });
-
         const week1Data = response.data.find(item => item.week_name === 'Final Report');
         const week6Data = response.data.find(item => item.week_name === 'Week 6');
 
         setSubmission(week1Data);
-        setIsWeek6Graded(week6Data && week6Data.submission_status === 'Submitted');
+        setIsWeek6Graded(week6Data || week6Data.submission_status === 'Submitted' || week6Data.submission_status);
 
       } catch (error) {
         console.error('Error fetching submissions:', error);
@@ -49,10 +48,6 @@ const Wsubmitlink7 = () => {
     return <Typography variant="h6" style={{ padding: "10px" }}>Loading...</Typography>;
   }
 
-  if (!submission) {
-    return <Typography variant="h6" style={{ padding: "10px" }}>No data found for Final Report</Typography>;
-  }
-
   return (
     <>
       <Breadcrumbs />
@@ -65,11 +60,11 @@ const Wsubmitlink7 = () => {
             <TableBody>
               <TableRow>
                 <TableCell component="th" scope="row">Submission Status</TableCell>
-                <TableCell align="left">{submission.submission_status}</TableCell>
+                <TableCell align="left">{submission?.submission_status || 'Not submitted'}</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell component="th" scope="row">Grading Status</TableCell>
-                <TableCell align="left">{submission.grading_status}</TableCell>
+                <TableCell align="left">{submission?.grading_status || 'Not graded'}</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell component="th" scope="row">Due date</TableCell>
@@ -77,11 +72,11 @@ const Wsubmitlink7 = () => {
               </TableRow>
               <TableRow>
                 <TableCell component="th" scope="row">Online text</TableCell>
-                <TableCell align="left">{submission.online_text}</TableCell>
+                <TableCell align="left">{submission?.online_text || 'No text'}</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell component="th" scope="row">Submission comments</TableCell>
-                <TableCell align="left">{submission.submission_comments}</TableCell>
+                <TableCell align="left">{submission?.submission_comments || 'No comments'}</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell component="th" scope="row">
@@ -90,7 +85,7 @@ const Wsubmitlink7 = () => {
                       Open only in the last week of submission.
                     </Typography>
                   )}
-                  {submission.submission_status === 'Submitted' && (
+                  {submission?.submission_status === 'Submitted' && (
                     <Typography color="primary" style={{ marginBottom: '10px' }}>
                       Your Final Report has already been submitted.
                     </Typography>
@@ -99,7 +94,7 @@ const Wsubmitlink7 = () => {
                     <Button 
                       variant="contained" 
                       color="primary" 
-                      disabled={submission.submission_status === 'Submitted' || !isWeek6Graded}
+                      disabled={submission?.submission_status === 'Submitted' || !isWeek6Graded}
                     >
                       Submit
                     </Button>
@@ -123,11 +118,11 @@ const Wsubmitlink7 = () => {
             <TableBody>
               <TableRow>
                 <TableCell component="th" scope="row">Grade</TableCell>
-                <TableCell align="left">{submission.grade || 'Not Submitted'}</TableCell>
+                <TableCell align="left">{submission?.grade || 'Not Submitted'}</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell component="th" scope="row">Graded By</TableCell>
-                <TableCell align="left">{submission.graded_by || 'Not graded'}</TableCell>
+                <TableCell align="left">{submission?.graded_by || 'Not graded'}</TableCell>
               </TableRow>
             </TableBody>
           </Table>

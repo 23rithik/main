@@ -32,49 +32,7 @@ const Wsubmitform1 = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const navigate = useNavigate();
   
-  // Uncomment and update if needed
-  // const [studentId, setStudentId] = useState('');
-  // const [projectId, setProjectId] = useState('');
-  // const [loggedInStudentId, setLoggedInStudentId] = useState('');
-
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const token = localStorage.getItem('token');
-  //       if (token) {
-  //         // Uncomment if jwt-decode is installed and used
-  //         // const decodedToken = jwtDecode(token);
-  //         // setStudentId(decodedToken.studentId);
-  //         // setProjectId(decodedToken.projectId);
-
-  //         const response = await axiosInstance.get('http://localhost:3000/wsubmitdata', {
-  //           headers: {
-  //             Authorization: `Bearer ${token}`
-  //           }
-  //         });
-
-  //         const data = response.data.find(item => item.week_name === form.week_name);
-
-  //         if (data) {
-  //           setForm({
-  //             week_name: data.week_name,
-  //             submission_status: data.submission_status,
-  //             grading_status: data.grading_status,
-  //             online_text: data.online_text,
-  //             submission_comments: data.submission_comments,
-  //             grade: data.grade,
-  //             graded_by: data.graded_by
-  //           });
-  //           setIsSubmitted(data.submission_status === 'Submitted');
-  //         }
-  //       }
-  //     } catch (error) {
-  //       console.error("Error fetching data:", error);
-  //     }
-  //   };
-
-  //   fetchData();
-  // }, [form.week_name]);
+  
 
   const handleChange = (event) => {
     const { name, value } = event.target;

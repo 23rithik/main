@@ -44,6 +44,34 @@ const getsubmission = async (req, res) => {
     
 };
 
+
+const getsubmissiondata = async (req, res) => {
+    try {
+        // Access studentId from the token payload
+        const studentId = req.user.userId;
+
+        // Ensure studentId is available
+        if (!studentId) {
+            return res.status(400).json({ error: 'Student ID is required' });
+        }
+
+        // Query the database for submissions by studentId
+        const data = await Submitdata.find({ student: studentId });
+
+        // Check if data is found
+        if (!data.length) {
+            return res.status(404).json({ error: 'No submissions found for this student' });
+        }
+
+        // Log and return data
+        // console.log('Fetched data:', data);
+        res.status(200).json(data);
+    } catch (error) {
+        console.error('Error fetching submissions:', error);
+        res.status(500).json({ error: 'Error fetching data' });
+    }
+};
+
 const postsubmission = async (req, res) => {
     try {
         // Extract studentId and projectId from the token
@@ -110,5 +138,5 @@ const postsubmission = async (req, res) => {
 //     }
 // }
 
-module.exports = {getsubmission,postsubmission};
+module.exports = {getsubmission,postsubmission,getsubmissiondata};
 

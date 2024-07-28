@@ -3,19 +3,10 @@ import { useState, useEffect, memo } from 'react';
 import Box from '@mui/material/Box';
 import { SimpleTreeView } from '@mui/x-tree-view/SimpleTreeView';
 import { TreeItem } from '@mui/x-tree-view/TreeItem';
-import { Grid, LinearProgress, Paper, styled, Typography } from '@mui/material';
+import { Grid, Paper, styled, Typography } from '@mui/material';
 import { Link } from 'react-router-dom';
 import Breadcrumbs from '../Breadcrumbs'; // Adjust this path if necessary
 import axiosInstance from './axiosintercepter'; // Adjust this path if necessary
-
-const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
-  height: 15,
-  borderRadius: 5,
-  '& .MuiLinearProgress-bar': {
-    borderRadius: 5,
-    backgroundColor: theme.palette.mode === 'light' ? '#1a90ff' : '#308fe8',
-  },
-}));
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
@@ -29,10 +20,10 @@ const TreeViewComponent = memo(({ row, index, isWeekend }) => {
   const getStatusLabel = (status) => (status === 'graded' ? 'Graded' : 'Not Graded');
 
   const linkTo = `/wsubmitlink${index + 1}`;
-  // const isLinkDisabled = (weekName) => {
-  //   const weekNumber = parseInt(weekName.replace('Week ', ''), 10);
-  //   return weekNumber >= 1 && weekNumber <= 6 && !isWeekend;
-  // };
+  const isLinkDisabled = (weekName) => {
+    const weekNumber = parseInt(weekName.replace('Week ', ''), 10);
+    return weekNumber >= 1 && weekNumber <= 6 && !isWeekend;
+  };
 
   return (
     <Grid item xs={11} md={8}>
@@ -50,15 +41,15 @@ const TreeViewComponent = memo(({ row, index, isWeekend }) => {
                 sx={{ marginBottom: 2 }}
               />
               
-              {/* {isLinkDisabled(row.week_name) ? (
+              {isLinkDisabled(row.week_name) ? (
                 <Typography color="textSecondary">Submit (Available on Weekends)</Typography>
-              ) : ( */}
+              ) : (
                 <Link to={linkTo} style={{ textDecoration: 'none' }}>
                   <TreeItem itemId={`${row.week_name}-submit`} label="Submit" />
                 </Link>
+              )}
               
-              
-              <TreeItem itemId={`${row.week_name}-status`} label={`Status: ${getStatusLabel(row.grading_status)}`} />
+              {/* <TreeItem itemId={`${row.week_name}-status`} label={`Status: ${getStatusLabel(row.grading_status)}`} /> */}
             </TreeItem>
           </SimpleTreeView>
         </Typography>
@@ -69,7 +60,6 @@ const TreeViewComponent = memo(({ row, index, isWeekend }) => {
 
 const Wsubmit = () => {
   const [rows, setRows] = useState([]);
-  const [progressValue, setProgressValue] = useState(0);
   const [loading, setLoading] = useState(true);
   const [isWeekend, setIsWeekend] = useState(false);
 
@@ -93,13 +83,6 @@ const Wsubmit = () => {
 
     fetchSubmissionData();
   }, []);
-
-  useEffect(() => {
-    const gradedWeeks = rows.filter(row => row.grading_status === 'graded').length;
-    const totalWeeks = rows.length;
-    const progress = totalWeeks > 0 ? (gradedWeeks / totalWeeks) * 100 : 0;
-    setProgressValue(progress);
-  }, [rows]);
 
   useEffect(() => {
     const currentDay = new Date().getDay();
@@ -142,19 +125,6 @@ const Wsubmit = () => {
         }}
       >
         <Grid lg={12} container justifyContent="center" alignItems="center" spacing={2} style={{ marginTop: "13%", marginRight: "4%" }}>
-          <Grid item xs={11} md={8}>
-            <StyledPaper sx={{ my: 1, p: 2, background: 'lightgray' }}>
-              <Typography>
-                <Box sx={{ width: '100%' }}>
-                  <Typography variant="subtitle1" gutterBottom>
-                    Progress based on Graded Projects:
-                  </Typography>
-                  <BorderLinearProgress variant="determinate" value={progressValue} />
-                </Box>
-              </Typography>
-            </StyledPaper>
-          </Grid>
-
           {sortedRows.map((row, index) => (
             <TreeViewComponent key={row.week_name} row={row} index={index} isWeekend={isWeekend} />
           ))}

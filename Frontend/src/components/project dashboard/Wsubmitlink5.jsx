@@ -19,22 +19,23 @@ const Wsubmitlink5 = () => {
   const [loading, setLoading] = useState(true); // State to manage loading status
 
   useEffect(() => {
-    const fetchSubmissionData = () => {
+    const fetchSubmissionData = async () => {
       const token = localStorage.getItem('token');
-      axiosInstance.get('http://localhost:3000/wsubmitdata', {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
-        .then((res) => {
-          const week1Data = res.data.find(item => item.week_name === 'Week 5');
-          setSubmission(week1Data);
-          setLoading(false);
-        })
-        .catch((error) => {
-          console.error('Error fetching submissions:', error);
-          setLoading(false);
+      try {
+        const response = await axiosInstance.post('http://localhost:3000/getsubmissiondata', {}, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          } 
         });
+
+        // Assuming the API returns an array of submissions, find Week 1 data
+        const week1Data = response.data.find(item => item.week_name === 'Week 5');
+        setSubmission(week1Data || null);
+      } catch (error) {
+        console.error('Error fetching submissions:', error);
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchSubmissionData();
@@ -42,10 +43,6 @@ const Wsubmitlink5 = () => {
 
   if (loading) {
     return <Typography variant="h6" style={{ padding: "10px" }}>Loading...</Typography>;
-  }
-
-  if (!submission) {
-    return <Typography variant="h6" style={{ padding: "10px" }}>No data found for Week 1</Typography>;
   }
 
   return (
@@ -57,27 +54,27 @@ const Wsubmitlink5 = () => {
             <Typography variant="h6" style={{ padding: "10px" }}>
               <b>Submission</b>
             </Typography>
-            <Table sx={{ minWidth: 650 }} aria-label="submission 1 table">
+            <Table sx={{ minWidth: 650 }} aria-label="submission 5 table">
               <TableBody>
                 <TableRow>
-                  <TableCell component="th" scope="row">Submission status</TableCell>
-                  <TableCell align="left">{submission.submission_status}</TableCell>
+                  <TableCell component="th" scope="row">Submission Status</TableCell>
+                  <TableCell align="left">{submission ? submission.submission_status : 'Not Submitted'}</TableCell>
                 </TableRow>
                 <TableRow>
-                  <TableCell component="th" scope="row">Grading status</TableCell>
-                  <TableCell align="left">{submission.grading_status}</TableCell>
+                  <TableCell component="th" scope="row">Grading Status</TableCell>
+                  <TableCell align="left">{submission ? submission.grading_status : 'Not Graded'}</TableCell>
                 </TableRow>
                 <TableRow>
-                  <TableCell component="th" scope="row">Due date</TableCell>
-                  <TableCell align="left">12-12-12</TableCell> {/* Adjust as needed */}
+                  <TableCell component="th" scope="row">Due Date</TableCell>
+                  <TableCell align="left">12-12-12</TableCell> {/* Adjust this as needed */}
                 </TableRow>
                 <TableRow>
-                  <TableCell component="th" scope="row">Online text</TableCell>
-                  <TableCell align="left">{submission.online_text}</TableCell>
+                  <TableCell component="th" scope="row">Online Text</TableCell>
+                  <TableCell align="left">{submission ? submission.online_text : 'No Text'}</TableCell>
                 </TableRow>
                 <TableRow>
-                  <TableCell component="th" scope="row">Submission comments</TableCell>
-                  <TableCell align="left">{submission.submission_comments}</TableCell>
+                  <TableCell component="th" scope="row">Submission Comments</TableCell>
+                  <TableCell align="left">{submission ? submission.submission_comments : 'No Comments'}</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell component="th" scope="row">
@@ -85,7 +82,7 @@ const Wsubmitlink5 = () => {
                       <Button 
                         variant="contained" 
                         color="primary" 
-                        disabled={submission.submission_status === 'Submitted'}
+                        disabled={submission && submission.submission_status === 'Submitted'}
                       >
                         Submit
                       </Button>
@@ -96,7 +93,7 @@ const Wsubmitlink5 = () => {
                   </TableCell>
                   <TableCell align="left"></TableCell>
                 </TableRow>
-                {submission.submission_status === 'Submitted' && (
+                {submission && submission.submission_status === 'Submitted' && (
                   <TableRow>
                     <TableCell colSpan={2} align="center">
                       <Typography variant="h6" color="textSecondary">
@@ -113,15 +110,15 @@ const Wsubmitlink5 = () => {
             <Typography variant="h6" style={{ padding: "10px" }}>
               <b>Feedback</b>
             </Typography>
-            <Table sx={{ minWidth: 650 }} aria-label="submission 2 table">
+            <Table sx={{ minWidth: 650 }} aria-label="feedback table">
               <TableBody>
                 <TableRow>
                   <TableCell component="th" scope="row">Grade</TableCell>
-                  <TableCell align="left">{submission.grade || 'Not Submitted'}</TableCell> {/* Adjust as needed */}
+                  <TableCell align="left">{submission ? submission.grade : 'Not Graded'}</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell component="th" scope="row">Graded By</TableCell>
-                  <TableCell align="left">{submission.graded_by || 'Not graded'}</TableCell> {/* Adjust as needed */}
+                  <TableCell align="left">{submission ? submission.graded_by : 'Not Graded'}</TableCell>
                 </TableRow>
               </TableBody>
             </Table>
@@ -130,6 +127,6 @@ const Wsubmitlink5 = () => {
       </Grid>
     </>
   );
-}
+};
 
 export default Wsubmitlink5;
