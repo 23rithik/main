@@ -29,10 +29,10 @@ const TreeViewComponent = memo(({ row, index, isWeekend }) => {
   const getStatusLabel = (status) => (status === 'graded' ? 'Graded' : 'Not Graded');
 
   const linkTo = `/wsubmitlink${index + 1}`;
-  const isLinkDisabled = (weekName) => {
-    const weekNumber = parseInt(weekName.replace('Week ', ''), 10);
-    return weekNumber >= 1 && weekNumber <= 6 && !isWeekend;
-  };
+  // const isLinkDisabled = (weekName) => {
+  //   const weekNumber = parseInt(weekName.replace('Week ', ''), 10);
+  //   return weekNumber >= 1 && weekNumber <= 6 && !isWeekend;
+  // };
 
   return (
     <Grid item xs={11} md={8}>
@@ -50,13 +50,13 @@ const TreeViewComponent = memo(({ row, index, isWeekend }) => {
                 sx={{ marginBottom: 2 }}
               />
               
-              {isLinkDisabled(row.week_name) ? (
+              {/* {isLinkDisabled(row.week_name) ? (
                 <Typography color="textSecondary">Submit (Available on Weekends)</Typography>
-              ) : (
+              ) : ( */}
                 <Link to={linkTo} style={{ textDecoration: 'none' }}>
                   <TreeItem itemId={`${row.week_name}-submit`} label="Submit" />
                 </Link>
-              )}
+              
               
               <TreeItem itemId={`${row.week_name}-status`} label={`Status: ${getStatusLabel(row.grading_status)}`} />
             </TreeItem>
